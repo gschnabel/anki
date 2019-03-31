@@ -76,9 +76,13 @@ class Template:
     def render_sections(self, template, context):
         """Expands sections."""
         while 1:
+            print("entering render_sections") #georg
+            print(template) #georg
+            print(self.section_re)
             match = self.section_re.search(template)
             if match is None:
                 break
+            print("survive") #georg
 
             section, section_name, inner = match.group(0, 1, 2)
             section_name = section_name.strip()
@@ -86,6 +90,7 @@ class Template:
             # check for cloze
             val = None
             m = re.match(r"c[qa]:(\d+):(.+)", section_name)
+            print(section_name) #georg
             if m:
                 # get full field text
                 txt = get_or_attr(context, m.group(2), None)
@@ -115,18 +120,28 @@ class Template:
                 break
             repCount += 1
 
+            print("inside render_tags") #georg
+            print(self.tag_re) #georg
+
             match = self.tag_re.search(template)
             if match is None:
                 break
 
             tag, tag_type, tag_name = match.group(0, 1, 2)
             tag_name = tag_name.strip()
+            print("tag " + tag) #georg
+            #print("tag_type " + tag_type) #georg
+            print("tag_name " + tag_name) #georg
+            
             try:
                 func = modifiers[tag_type]
+                print("#####") #georg
+                print(func) #georg
                 replacement = func(self, tag_name, context)
                 template = template.replace(tag, replacement)
             except (SyntaxError, KeyError):
                 return "{{invalid template}}"
+            print("return template: " + template) #georg
 
         return template
 

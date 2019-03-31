@@ -578,6 +578,7 @@ where c.nid = n.id and c.id in %s group by nid""" % ids2str(cids)):
         afmt = afmt or template['afmt']
         for (type, format) in (("q", qfmt), ("a", afmt)):
             if type == "q":
+                print("format: " + format) #georg
                 format = re.sub("{{(?!type:)(.*?)cloze:", r"{{\1cq-%d:" % (data[4]+1), format)
                 format = format.replace("<%cloze:", "<%%cq:%d:" % (
                     data[4]+1))
