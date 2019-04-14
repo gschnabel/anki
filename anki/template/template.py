@@ -70,7 +70,10 @@ class Template:
         section = r"%(otag)s[\#|^]([^\}]*)%(ctag)s(.+?)%(otag)s/\1%(ctag)s"
         self.section_re = re.compile(section % tags, re.M|re.S)
 
-        tag = r"%(otag)s(#|=|&|!|>|\{)?(.+?)\1?%(ctag)s+"
+        tag = r"%(otag)s(#|=|&|!|>|\{)?("
+        tag+= r"(?:[^c]|c[^0-9]|c[0-9][^:])"  # do not match the cloze expression
+        tag+= r"(?:[^{}]|\{[^{]|\}[^}])*?"    # do not match a tag that contains still subtags   
+        tag+= r")\1?%(ctag)s"
         self.tag_re = re.compile(tag % tags)
 
     def render_sections(self, template, context):
@@ -169,6 +172,7 @@ class Template:
         mods.reverse()
         mods.sort(key=lambda s: not s=="type")
 
+
         for mod in mods:
             # built-in modifiers
             if mod == 'text':
@@ -181,6 +185,7 @@ class Template:
             elif mod.startswith('cq-') or mod.startswith('ca-'):
                 # cloze deletion
                 mod, extra = mod.split("-")
+                txt = self.render_tags(txt, context)
                 txt = self.clozeText(txt, extra, mod[1]) if txt and extra else ""
             else:
                 # hook-based field modifier
