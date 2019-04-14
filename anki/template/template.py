@@ -172,7 +172,6 @@ class Template:
         mods.reverse()
         mods.sort(key=lambda s: not s=="type")
 
-
         for mod in mods:
             # built-in modifiers
             if mod == 'text':
